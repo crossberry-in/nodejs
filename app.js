@@ -1,42 +1,26 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const fs = require("fs");
 const cors = require("cors");
 
 const app = express();
+
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const filePath = "data.json";
-
-// POST route → save JSON
-app.post("/save", (req, res) => {
-    const name = req.body.name;
-    const message = req.body.message;
-
-    // Read existing JSON or create empty
-    let data = [];
-    if (fs.existsSync(filePath)) {
-        data = JSON.parse(fs.readFileSync(filePath));
-    }
-
-    // New record
-    const newData = {
-        name: name,
-        message: message,
-        time: new Date().toISOString()
-    };
-
-    data.push(newData);
-
-    // Save JSON
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
-
-    res.send("Node.js மூலம் JSON கோப்பில் டேட்டா சேமிக்கப்பட்டது!");
+// ✅ Root route – VERY IMPORTANT for Railway
+app.get("/", (req, res) => {
+    res.send("🚀 Node.js deployed successfully on Railway!");
 });
 
-// Server start
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+// Example POST route
+app.post("/save", (req, res) => {
+    res.json({ message: "Data received", data: req.body });
+});
+
+// Railway will provide PORT automatically
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log("Server running on port " + PORT);
 });
